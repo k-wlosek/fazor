@@ -1,70 +1,81 @@
 import math
-
 import matplotlib.pyplot as plt
-from matplotlib.patches import Wedge
-import numpy as np
+import matplotlib.patches as Patches
 
 import js
 import io, base64
 
-# Dane impedancji
-U_volts = float(js.document.getElementById("ph-voltage").value)
-I_amps = float(js.document.getElementById("ph-current").value)
-alpha_deg = float(js.document.getElementById("ph-angle").value)
-negative = js.document.getElementById("ph-negative").checked
-title = js.document.getElementById("ph-title").value
+if __name__ == '__main__':
+    # Dane impedancji
+    U_volts = float(js.document.getElementById("ph-voltage").value)
+    I_amps = float(js.document.getElementById("ph-current").value)
+    phi_deg = float(js.document.getElementById("ph-angle").value)
+    title = js.document.getElementById("ph-title").value
 
-# Oblicz ucięte U
-U_volts_cut = round(math.sqrt(U_volts ** 2 - I_amps ** 2), 2)
+    # Konwersja kąta ze stopni na radiany
+    phi_rad = phi_deg / 180 * math.pi
 
-# Oblicz wysokość diagramu
-alpha_rad = np.deg2rad(alpha_deg)
-plot_height = math.sqrt((I_amps / math.cos(alpha_rad)) ** 2 - I_amps ** 2)
+    # Oblicz osie X i Y
+    os_X = round(U_volts * math.cos(phi_rad), 2)
+    os_Y = round(math.fabs(U_volts * math.sin(phi_rad)), 2)
 
-# Konwersja kąta ze stopni na radiany
-phi_rad = np.deg2rad(alpha_deg)
+    # Utwórz nowy wykres
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.set_aspect('equal', adjustable='box')
 
-# Utwórz nowy wykres
-fig, ax = plt.subplots(figsize=(8, 8))
-ax.set_aspect('equal', adjustable='box')
+    # Utwórz siatkę
+    ax.grid(which="both", linestyle="-", linewidth=0.5)
 
-# Utwórz siatkę
-ax.grid(which="both", linestyle="-", linewidth=0.5)
+    # Narysuj trójkąt impedancji
+    ax.plot([0, os_X], [0, 0], 'r')
+    ax.plot([0, os_X], [0, os_Y], 'g')
+    plt.annotate('', xy=(os_X * 1.015, 0), xytext=(-0.1, -0.1),
+                 arrowprops=dict(arrowstyle='->', lw=1.5, color='r'))
+    plt.annotate('', xy=(os_X * 1.015, os_Y * 1.015), xytext=(-0.1, -0.1),
+                 arrowprops=dict(arrowstyle='->', lw=1.5, color='g'))
 
-# Narysuj trójkąt impedancji
-ax.plot([0, I_amps], [0, 0], 'r')
-ax.plot([0, I_amps], [0, plot_height], 'g')
+    # Dodaj oznaczenie kąta między I oraz U
+    style = "Simple, tail_width=0.5, head_width=6, head_length=10"
+    kw = dict(arrowstyle=style, color="k")
+    gdzie = os_X / 5
+    gdzieX = math.cos(phi_rad) * gdzie
+    gdzieY = math.fabs((math.sin(phi_rad) * gdzie))
+    fancyA = Patches.FancyArrowPatch((gdzie, 0), (gdzieX, gdzieY), connectionstyle=f"Arc3,rad={-0.2 if phi_deg<0 else 0.2}", **kw)
+    fancyA.set_zorder(2)
+    ax.add_patch(fancyA)
 
-# Dodaj kąt między R i Z
-angle = Wedge(center=(0, 0), r=(I_amps / 4), theta1=0, theta2=alpha_deg, color='black', alpha=0.2)
-ax.add_patch(angle)
+    # Dodaj adnotacje nad przyprostokątnymi
+    ax.annotate(f"I = {I_amps} A", (os_X / 2, 0), textcoords="offset points", xytext=(0, 4), ha='center',
+                fontsize=12)
 
-# Dodaj adnotacje nad przyprostokątnymi
-ax.annotate(f"I = {I_amps} A", (I_amps / 2, 0), textcoords="offset points", xytext=(0, 10), ha='center', fontsize=12)
+    # Dodaj adnotację przy przeciwprostokątnej
+    ax.annotate(f"U = {U_volts} V", (os_X / 2, os_Y / 2), textcoords="offset points", xytext=(0, -10), ha='center',
+                fontsize=12, rotation=phi_deg)
 
-if negative:
-    ax.annotate(f"U = {U_volts} V", (I_amps / 2, plot_height / 2), textcoords="offset points", xytext=(0, 0), ha='center', fontsize=12, rotation=-alpha_deg)
-    ax.annotate(f"φ = -{alpha_deg}°", (I_amps / 5, 0.01), textcoords="offset points", xytext=(I_amps / 15, -U_volts_cut / 10), ha='center', fontsize=12)
-else:
-    ax.annotate(f"U = {U_volts} V", (I_amps / 2, plot_height / 2), textcoords="offset points", xytext=(0, 0), ha='center', fontsize=12, rotation=alpha_deg)
-    ax.annotate(f"φ = {alpha_deg}°", (I_amps / 5, 0), textcoords="offset points", xytext=(I_amps / 15, U_volts_cut / 15), ha='center', fontsize=12)
+    # Dodaj adnotację obok oznaczenia kąta
+    ax.annotate(f"φ = {(phi_deg)}°", (os_X / 4.5, abs((os_X / 4) * math.tan(phi_rad) / 3)), textcoords="offset points",
+                xytext=(0, 0), ha='left', fontsize=12)
 
-# Dodaj groty
-plt.annotate('', xy=(I_amps * 1.01, plot_height * 1.01), xytext=(I_amps * 0.95, plot_height * 0.95), arrowprops=dict(arrowstyle='->', lw=1.5, color='g'))
-plt.annotate('', xy=(I_amps*1.01, 0), xytext=(I_amps*0.95, 0), arrowprops=dict(arrowstyle='->', lw=1.5, color='r'))
+    # Ukryj przeciwne osie X i Y
+    ax.spines['right'].set_visible(False)
+    ax.spines['top'].set_visible(False)
 
-# Ukryj przeciwne osie X i Y
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
+    # Ogranicz osie
+    if phi_deg < 0:
+        ax.set_ylim(os_Y + 5, -5)
+    else:
+        ax.set_ylim(-5, os_Y + 5)
 
-# Ogranicz osie
-if negative:
-    ax.set_ylim(plot_height * 1.05, -plot_height * 0.05)
+    # Dostosuj skalę pod osią X
+    scaling_factor = I_amps / os_X
+    desired_xticks = [0, os_X * 0.25, os_X * 0.5, os_X * 0.75, os_X]
+    ax.set_xticks(desired_xticks)
+    ax.set_xticklabels([f'{(tick * scaling_factor):.3f}' for tick in desired_xticks])
 
-# Dodaj etykiety osi
-ax.set_title(title, fontsize=14, pad=20)
+    # Dodaj tytuł
+    ax.set_title(title, fontsize=14, pad=20)
 
-buf = io.BytesIO()
-fig.savefig(buf, format='png', dpi=200, bbox_inches='tight')
-buf.seek(0)
-ph_img = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
+    buf = io.BytesIO()
+    fig.savefig(buf, format='png', dpi=200, bbox_inches='tight')
+    buf.seek(0)
+    ph_img = 'data:image/png;base64,' + base64.b64encode(buf.read()).decode('UTF-8')
