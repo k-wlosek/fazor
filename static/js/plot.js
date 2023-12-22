@@ -65,12 +65,12 @@ async function drawTrojkat() {
         packages: ['matplotlib', 'numpy']
     });
 
-    const numeric_values_ids = ['tr-impedance', 'tr-resistance', 'tr-angle']
+    const numeric_values_ids = ['tr-impedance', 'tr-angle']
     for (const id of numeric_values_ids) {
         const value = document.getElementById(id).value.trim();
         if (!isNumeric(value)) {
             // Show toast and fail
-            showToast('Błąd - trójkąt impedancji', 'Impedancja, rezystancja i kąt muszą być liczbami rzeczywistymi.', 3000);
+            showToast('Błąd - trójkąt impedancji', 'Impedancja, i kąt muszą być liczbami rzeczywistymi.', 3000);
             return;
         }
     }
