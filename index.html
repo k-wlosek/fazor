@@ -68,15 +68,15 @@
                   <div class="input-group mb-3" id="ph-0-0-datapoint">
                     <span class="input-group-text" id="basic-addon1">Oznaczenie</span>
                     <input type="text" class="form-control" placeholder="U_R1" aria-label="Oznaczenie"
-                      aria-describedby="basic-addon2" id="ph-current">
+                      aria-describedby="basic-addon2" id="ph-annotation">
                       <span class="input-group-text" id="basic-addon1">Wartość</span>
                     <input type="text" class="form-control" placeholder="100" aria-label="Wartość"
-                      aria-describedby="basic-addon2" id="ph-current">
+                      aria-describedby="basic-addon2" id="ph-value">
                     <span class="input-group-text" id="basic-addon1">ϕ</span>
                     <input type="text" class="form-control" placeholder="60" aria-label="Kąt w odniesieniu do osi OX"
                       aria-describedby="basic-addon2" id="ph-angle">
                     <span class="input-group-text" id="basic-addon2">°</span>
-                    <span class="input-group-text" id="basic-addon1">Kolor</span>
+                    <span class="input-group-text" id="basic-addon1 color-text">Kolor</span>
                     <input data-jscolor="
                     {
                       preset: 'dark', 
@@ -100,7 +100,7 @@
                     <button class="btn btn-danger" onclick="removeNode(event)" type="button" id="button-addon2">-</button>
                   </div>
                 </div>
-                <div class="row">
+                <div class="row" id="ph-angle-between-0">
                   <!-- Draw angle between -->
                   <span class="input-group-text col" id="basic-addon1">Kąt pomiędzy</span>
                   <select class="form-select col" aria-label="Wybierz" id="ph-angle-between-0-0" onmouseover="findOptions(this)">
@@ -118,14 +118,14 @@
                   " value="#3399FF" class="form-control col" aria-label="kolor"
                     aria-describedby="basic-addon2" id="ph-angle-between-0-3">
                     <div class="input-group-append col">
-                      <button class="btn btn-success" onclick="addSymbol(event)" type="button" id="button-addon2">+</button>
+                      <button class="btn btn-success" onclick="addDrawAngle(event)" type="button" id="button-addon2">+</button>
                     </div>
                     <div class="input-group-append col">
                       <button class="btn btn-danger" onclick="removeNode(event)" type="button" id="button-addon2">-</button>
                     </div>
                 </div>
               </p>
-              <a onclick="drawFazory()" class="btn btn-primary">Narysuj</a> <br><br>
+              <a onclick="drawFazory(event)" class="btn btn-primary">Narysuj</a> <br><br>
               <img src="" alt="" id="ph-plot" class="card-img-bottom" hidden="true">
             </div>
           </div>

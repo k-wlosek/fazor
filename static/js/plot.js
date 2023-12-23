@@ -106,9 +106,31 @@ function addDatapoint(event) {
     idList = id.split('-');
     idList[2] = parseInt(idList[2]) + 1;
     id = idList.join('-');
-    console.log(id);
+    // console.log(id);
     const newDatapoint = datapoint.cloneNode(true);
     newDatapoint.id = id;
+    // console.log(newDatapoint);
+
+    // Fix color picker
+    let picker = newDatapoint.querySelector('#ph-color');
+    // Remove old color picker
+    picker.remove();
+    // Create new color picker
+    const pickerHTML = document.createElement('input');
+    pickerHTML.setAttribute('class', 'form-control');
+    pickerHTML.setAttribute('aria-label', 'kolor');
+    pickerHTML.setAttribute('aria-describedby', 'basic-addon2');
+    pickerHTML.setAttribute('id', 'ph-color');
+
+    const opts = {
+        preset: 'dark', 
+        palette: '#C00 #0C0 #00C #000'
+    };
+
+    addNewButton = newDatapoint.querySelector('.input-group-append');
+    let _ = new JSColor(pickerHTML, opts);
+    addNewButton.parentNode.insertBefore(pickerHTML, addNewButton);
+
     datapoint.parentNode.insertBefore(newDatapoint, datapoint.nextSibling);
 }
 
@@ -157,41 +179,184 @@ function findOptions(el) {
         j++;
     });
     // Update options
-    units.forEach(function(text, index) {
+    units.forEach(function (text, index) {
         if (options[index]) {
-          // If the option exists, update its text
-          options[index].textContent = text;
+            // If the option exists, update its text
+            options[index].textContent = text;
         } else {
-          // If the option doesn't exist, create a new option and append it to the select element
-          var newOption = document.createElement('option');
-          newOption.textContent = text;
-          el.appendChild(newOption);
+            // If the option doesn't exist, create a new option and append it to the select element
+            var newOption = document.createElement('option');
+            newOption.textContent = text;
+            el.appendChild(newOption);
         }
-      });
-      
-      // Remove extra options if arr2 is shorter than the original options
-      if (options.length > units.length) {
+    });
+
+    // Remove extra options if arr2 is shorter than the original options
+    if (options.length > units.length) {
         for (var i = units.length; i < options.length; i++) {
-          options[i].remove();
+            options[i].remove();
         }
-      }
+    }
 
 }
 
-async function drawFazory() {
-    const pyodide = await loadPyodide({
-        packages: ['matplotlib', 'numpy']
+function addDrawAngle(event) {
+    const button = event.target;
+    const drawAngleDiv = button.parentElement.parentElement;
+    // console.log(drawAngleDiv);
+    const newDrawAngleDiv = drawAngleDiv.cloneNode(true);
+    let id = newDrawAngleDiv.id;
+    idList = id.split('-');
+    idList[3] = parseInt(idList[3]) + 1;
+    id = idList.join('-');
+    newDrawAngleDiv.id = id;
+
+    for (const element of newDrawAngleDiv.querySelectorAll('[id^="ph-angle-between-"]')) {
+        id = element.id;
+        idList = id.split('-');
+        idList[3] = parseInt(idList[3]) + 1;
+        id = idList.join('-');
+        element.id = id;
+    }
+
+
+    // Fix color picker
+    let picker = newDrawAngleDiv.querySelector('[id^="ph-angle-between-"][id$="-3"]');
+    // Remove old color picker
+    picker.remove();
+    // Create new color picker
+    const pickerHTML = document.createElement('input');
+    pickerHTML.setAttribute('class', 'form-control col');
+    pickerHTML.setAttribute('aria-label', 'kolor');
+    pickerHTML.setAttribute('aria-describedby', 'basic-addon2');
+    pickerHTML.setAttribute('id', id);
+
+    const opts = {
+        preset: 'dark', 
+        palette: '#C00 #0C0 #00C #000'
+    };
+
+    addNewButton = newDrawAngleDiv.querySelector('.input-group-append');
+    let _ = new JSColor(pickerHTML, opts);
+    addNewButton.parentNode.insertBefore(pickerHTML, addNewButton);
+
+    drawAngleDiv.parentNode.insertBefore(newDrawAngleDiv, drawAngleDiv.nextSibling);
+}
+
+function extractAnglesToDraw(parentDiv) {
+    let angles = [];
+    const drawAngleDivs = parentDiv.querySelectorAll('[id^="ph-angle-between-"]');
+    // console.log(drawAngleDivs);
+    for (let idx = 0; idx < drawAngleDivs.length; idx+=4) {
+        const element = drawAngleDivs[idx];
+        // console.log(element);
+        let ls = element.querySelectorAll('[id^="ph-angle-between-"]');
+        // console.log(ls);
+        let angle = [];
+        for (let idx2 = 0; idx2 < ls.length-1; idx2++) {
+            const element = ls[idx2];
+            if (element.value == 0) {
+                angle.push(0);
+            }
+            else {
+                v = element.value.split(' ')[1].split('(')[1].split('.')[0];
+                angle.push(parseInt(v)-1);
+            }
+        }
+        angle.push(ls[ls.length-1].value);
+        angles.push(angle);
+    }
+    return angles;
+}
+
+// Function to extract data from a unit div
+function extractDataFromUnit(unitDiv) {
+    var unitData = [];
+
+    var unit = unitDiv.value;
+
+    unitDiv = unitDiv.parentElement;
+
+    // Iterate through datapoint divs within the unit
+    var datapointDivs = unitDiv.querySelectorAll('[id^="ph-"][id$="-datapoint"]');
+    datapointDivs.forEach(function (datapointDiv) {
+        var value = datapointDiv.querySelector('#ph-value').value;
+        var angle = datapointDiv.querySelector('#ph-angle').value;
+        var annotation = datapointDiv.querySelector('#ph-annotation').value;
+        var color = datapointDiv.querySelector('#ph-color').value;
+        unitData.push([value, angle, annotation, color]);
     });
 
-    const numeric_values_ids = ['ph-voltage', 'ph-current', 'ph-angle']
-    for (const id of numeric_values_ids) {
-        const value = document.getElementById(id).value.trim();
-        if (!isNumeric(value)) {
-            // Show toast and fail
-            showToast('Błąd - wykres fazorowy', 'Napięcie, natężenie i kąt muszą być liczbami rzeczywistymi.', 3000);
-            return;
+    unitData.push(unit);
+
+    return unitData;
+}
+
+// Function to extract data from the main div
+function extractDataFromMainDiv(mainDiv) {
+    var result = [];
+
+    // Iterate through unit divs
+    var unitDivs = mainDiv.querySelectorAll('[id^="ph-"][id$="-unit"]');
+    // console.log(unitDivs)
+    unitDivs.forEach(function (unitDiv) {
+        // console.log(unitDiv)
+        var unitData = extractDataFromUnit(unitDiv);
+        result.push(unitData);
+    });
+
+    return result;
+}
+
+
+async function drawFazory(event) {
+    const button = event.target;
+    const mainDiv = button.parentElement;
+    // Extract data from the main div
+    const formattedData = extractDataFromMainDiv(mainDiv);
+
+    // Log the formatted data
+    // console.log(formattedData);
+
+    // Validate the data
+    var errors = [];
+    formattedData.forEach(arr => {
+        for (let idx = 0; idx < arr.length-1; idx++) {
+            // Datapoint
+            const datapoint = arr[idx];
+            const value = datapoint[0];
+            const angle = datapoint[1];
+            const annotation = datapoint[2];
+            const color = datapoint[3];
+            if (!isNumeric(value)) {
+                errors.push("Wartość " + value + " nie jest liczbą rzeczywistą.");
+            }
+            if (!isNumeric(angle)) {
+                errors.push("Kąt " + angle + " nie jest liczbą rzeczywistą.");
+            }
         }
+        const unit = arr[arr.length-1];
+    });
+
+    if (errors.length > 0) {
+        showToast('Błąd - wykres fazorowy', errors.join(" "), 3000);
+        return;
     }
+
+    // data = formattedData;
+
+    const angles = extractAnglesToDraw(mainDiv);
+    // console.log(angles);
+
+    console.log(formattedData, angles);
+
+    const pyodide = await loadPyodide();
+    await pyodide.loadPackage("micropip");
+    const micropip = pyodide.pyimport("micropip");
+    await micropip.install('static/python/phasors-1-py3-none-any.whl');
+
+    let data = { inp : formattedData, angles : angles };
+    pyodide.registerJsModule("data", data);
 
     // Run python code
     let python_code = ``;
