@@ -70,7 +70,7 @@ async function drawTrojkat() {
         const value = document.getElementById(id).value.trim();
         if (!isNumeric(value)) {
             // Show toast and fail
-            showToast('Błąd - trójkąt impedancji', 'Impedancja, i kąt muszą być liczbami rzeczywistymi.', 3000);
+            showToast('Błąd - trójkąt impedancji', 'Impedancja i kąt muszą być liczbami rzeczywistymi.', 3000);
             return;
         }
     }
@@ -155,7 +155,6 @@ function addSymbol(event) {
     idList[3] = "datapoint";
     id = idList.join('-');
     newDatapointElement.id = id;
-    // newSymbol.id = id;
 
     // Fix color picker
     let picker = newSymbol.querySelector('#ph-color');
@@ -218,13 +217,11 @@ function findOptions(el) {
             options[i].remove();
         }
     }
-
 }
 
 function addDrawAngle(event) {
     const button = event.target;
     const drawAngleDiv = button.parentElement.parentElement;
-    // console.log(drawAngleDiv);
     const newDrawAngleDiv = drawAngleDiv.cloneNode(true);
     let id = newDrawAngleDiv.id;
     idList = id.split('-');
@@ -267,12 +264,9 @@ function addDrawAngle(event) {
 function extractAnglesToDraw(parentDiv) {
     let angles = [];
     const drawAngleDivs = parentDiv.querySelectorAll('[id^="ph-angle-between-"]');
-    // console.log(drawAngleDivs);
     for (let idx = 0; idx < drawAngleDivs.length; idx+=4) {
         const element = drawAngleDivs[idx];
-        // console.log(element);
         let ls = element.querySelectorAll('[id^="ph-angle-between-"]');
-        // console.log(ls);
         let angle = [];
         for (let idx2 = 0; idx2 < ls.length-1; idx2++) {
             const element = ls[idx2];
@@ -319,9 +313,7 @@ function extractDataFromMainDiv(mainDiv) {
 
     // Iterate through unit divs
     var unitDivs = mainDiv.querySelectorAll('[id^="ph-"][id$="-unit"]');
-    // console.log(unitDivs)
     unitDivs.forEach(function (unitDiv) {
-        // console.log(unitDiv)
         var unitData = extractDataFromUnit(unitDiv);
         result.push(unitData);
     });
@@ -335,9 +327,6 @@ async function drawFazory(event) {
     const mainDiv = button.parentElement;
     // Extract data from the main div
     const formattedData = extractDataFromMainDiv(mainDiv);
-
-    // Log the formatted data
-    // console.log(formattedData);
 
     // Validate the data
     var errors = [];
@@ -364,12 +353,7 @@ async function drawFazory(event) {
         return;
     }
 
-    // data = formattedData;
-
     const angles = extractAnglesToDraw(mainDiv);
-    // console.log(angles);
-
-    console.log(formattedData, angles);
 
     const pyodide = await loadPyodide();
     await pyodide.loadPackage("micropip");
