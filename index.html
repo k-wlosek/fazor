@@ -2,114 +2,137 @@
 <html lang="pl" data-bs-theme="dark">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fazor</title>
-    <script defer src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
-        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
-        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
-    </script>
-    <script defer src="static/js/plot.js"></script>
-    <link rel="stylesheet" href="static/css/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fazor</title>
+  <script defer src="https://cdn.jsdelivr.net/pyodide/v0.24.1/full/pyodide.js"></script>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous">
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jscolor/2.5.2/jscolor.min.js"></script>
+  <script defer src="static/js/plot.js"></script>
+  <link rel="stylesheet" href="static/css/style.css">
 </head>
 
 <body>
-    <div class="container-fluid text-center">
-        <h1 class="mt-5">Fazor</h1>
-        <div class="row justify-content-center">
-            <div class="col-md-6 mt-4 mx-6">
-                <div class="p-3">
-                    <div class="card mx-auto" style="width: 30rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Trójkąt impedancji</h5>
-                            <p class="card-text">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">Tytuł</span>
-                                    <input type="text" class="form-control"
-                                        placeholder="Trójkąt impedancji dla pomiaru 1" aria-label="Tytuł"
-                                        aria-describedby="basic-addon1" id="tr-title">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">Z</span>
-                                    <input type="text" class="form-control" placeholder="200" aria-label="Impedancja"
-                                        aria-describedby="basic-addon1" id="tr-impedance">
-                                    <span class="input-group-text" id="basic-addon2">Ω</span>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">R</span>
-                                    <input type="text" class="form-control" placeholder="100" aria-label="Rezystancja"
-                                        aria-describedby="basic-addon1" id="tr-resistance">
-                                    <span class="input-group-text" id="basic-addon2">Ω</span>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">ϕ</span>
-                                    <input type="text" class="form-control" placeholder="60" aria-label="Kąt"
-                                        aria-describedby="basic-addon1" id="tr-angle">
-                                    <span class="input-group-text" id="basic-addon2">°</span>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="checkbox" value=""
-                                            aria-label="kąt ujemny?" aria-describedby="basic-addon2" id="tr-negative">
-                                    </div>
-                                    <input type="text" readonly class="form-control input-group-text" id="basic-addon2"
-                                        value="Kąt jest ujemny">
-                                </div>
-                            </p>
-                            <a onclick="drawTrojkat()" class="btn btn-primary">Narysuj</a> <br><br>
-                            <img src="" alt="" id="tr-plot" class="card-img-bottom" hidden="true">
-                        </div>
-                    </div>
+  <div class="container-fluid text-center">
+    <h1 class="mt-5">Fazor</h1>
+    <div class="col justify-content-center">
+      <div class="row mt-4 mx-6">
+        <div class="p-3">
+          <div class="card mx-auto" style="width: 30rem;">
+            <div class="card-body">
+              <h5 class="card-title">Trójkąt impedancji</h5>
+              <p class="card-text">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Tytuł</span>
+                  <input type="text" class="form-control" placeholder="Trójkąt impedancji dla pomiaru 1"
+                    aria-label="Tytuł" aria-describedby="basic-addon1" id="tr-title">
                 </div>
-            </div>
-            <div class="col-md-6 mt-4 mx-6">
-                <div class="p-3">
-                    <div class="card mx-auto" style="width: 30rem;">
-                        <div class="card-body">
-                            <h5 class="card-title">Wykres fazorowy</h5>
-                            <p class="card-text">
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">Tytuł</span>
-                                    <input type="text" class="form-control" placeholder="Wykres fazorowy dla pomiaru 1"
-                                        aria-label="Tytuł" aria-describedby="basic-addon1" id="ph-title">
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">U</span>
-                                    <input type="text" class="form-control" placeholder="200" aria-label="Napięcie"
-                                        aria-describedby="basic-addon2" id="ph-voltage">
-                                    <span class="input-group-text" id="basic-addon2">V</span>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">I</span>
-                                    <input type="text" class="form-control" placeholder="100" aria-label="Natężenie"
-                                        aria-describedby="basic-addon2" id="ph-current">
-                                    <span class="input-group-text" id="basic-addon2">A</span>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <span class="input-group-text" id="basic-addon1">ϕ</span>
-                                    <input type="text" class="form-control" placeholder="60" aria-label="Kąt"
-                                        aria-describedby="basic-addon2" id="ph-angle">
-                                    <span class="input-group-text" id="basic-addon2">°</span>
-                                </div>
-                                <div class="input-group mb-3">
-                                    <div class="input-group-text">
-                                        <input class="form-check-input mt-0" type="checkbox" value=""
-                                            aria-label="kąt ujemny?" aria-describedby="basic-addon2" id="ph-negative">
-                                    </div>
-                                    <input type="text" readonly class="form-control input-group-text" id="basic-addon2"
-                                        value="Kąt jest ujemny">
-                                </div>
-                            </p>
-                            <a onclick="drawFazory()" class="btn btn-primary">Narysuj</a> <br><br>
-                            <img src="" alt="" id="ph-plot" class="card-img-bottom" hidden="true">
-                        </div>
-                    </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Z</span>
+                  <input type="text" class="form-control" placeholder="200" aria-label="Impedancja"
+                    aria-describedby="basic-addon1" id="tr-impedance">
+                  <span class="input-group-text" id="basic-addon2">Ω</span>
                 </div>
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">ϕ</span>
+                  <input type="text" class="form-control" placeholder="60" aria-label="Kąt"
+                    aria-describedby="basic-addon1" id="tr-angle">
+                  <span class="input-group-text" id="basic-addon2">°</span>
+                </div>
+              </p>
+              <a onclick="drawTrojkat()" class="btn btn-primary">Narysuj</a> <br><br>
+              <img src="" alt="" id="tr-plot" class="card-img-bottom" hidden="true">
             </div>
+          </div>
         </div>
+      </div>
+      <div class="row mt-4 mx-6">
+        <div class="p-3">
+          <div class="card mx-auto" style="width: 60rem;">
+            <div class="card-body">
+              <h5 class="card-title">Wykres fazorowy</h5>
+              <p class="card-text">
+                <div class="input-group mb-3">
+                  <span class="input-group-text" id="basic-addon1">Tytuł</span>
+                  <input type="text" class="form-control" placeholder="Wykres fazorowy dla pomiaru 1" aria-label="Tytuł"
+                    aria-describedby="basic-addon1" id="ph-title">
+                </div>
+                <div class="input-group mb-3" style="border: 2px solid gainsboro; border-radius: 5px;">
+                  <span class="input-group-text" id="basic-addon1">Jednostka</span>
+                  <input type="text" class="form-control" placeholder="V" aria-label="Jednostka"
+                    aria-describedby="basic-addon1" id="ph-0-unit">
+                  <div class="input-group mb-3" id="ph-0-0-datapoint">
+                    <span class="input-group-text" id="basic-addon1">Oznaczenie</span>
+                    <input type="text" class="form-control" placeholder="U_R1" aria-label="Oznaczenie"
+                      aria-describedby="basic-addon2" id="ph-annotation">
+                      <span class="input-group-text" id="basic-addon1">Wartość</span>
+                    <input type="text" class="form-control" placeholder="100" aria-label="Wartość"
+                      aria-describedby="basic-addon2" id="ph-value">
+                    <span class="input-group-text" id="basic-addon1">ϕ</span>
+                    <input type="text" class="form-control" placeholder="60" aria-label="Kąt w odniesieniu do osi OX"
+                      aria-describedby="basic-addon2" id="ph-angle">
+                    <span class="input-group-text" id="basic-addon2">°</span>
+                    <span class="input-group-text" id="basic-addon1 color-text">Kolor</span>
+                    <input data-jscolor="
+                    {
+                      preset: 'dark', 
+                      palette: '#C00 #0C0 #00C #000'
+                    }
+                    " value="#3399FF" class="form-control" aria-label="kolor"
+                      aria-describedby="basic-addon2" id="ph-color">
+                    <!-- add new datapoint button -->
+                    <div class="input-group-append">
+                      <button class="btn btn-success" onclick="addDatapoint(event)" type="button" id="button-addon2">+</button>
+                    </div>
+                    <div class="input-group-append">
+                      <button class="btn btn-danger" onclick="removeNode(event)" type="button" id="button-addon2">-</button>
+                    </div>
+                  </div>
+                  <!-- add new symbol button -->
+                  <div class="input-group-append">
+                    <button class="btn btn-success" onclick="addSymbol(event)" type="button" id="button-addon2">+</button>
+                  </div>
+                  <div class="input-group-append">
+                    <button class="btn btn-danger" onclick="removeNode(event)" type="button" id="button-addon2">-</button>
+                  </div>
+                </div>
+                <div class="row" id="ph-angle-between-0">
+                  <!-- Draw angle between -->
+                  <span class="input-group-text col" id="basic-addon1">Kąt pomiędzy</span>
+                  <select class="form-select col" aria-label="Wybierz" id="ph-angle-between-0-0" onmouseover="findOptions(this)">
+                    <option value="0">Wybierz</option>
+                  </select>
+                  <select class="form-select col" aria-label="Wybierz" id="ph-angle-between-0-1" onmouseover="findOptions(this)">
+                    <option value="0">Wybierz</option>
+                  </select>
+                  <span class="input-group-text col" id="basic-addon1">Kolor</span>
+                  <input data-jscolor="
+                  {
+                    preset: 'dark', 
+                    palette: '#C00 #0C0 #00C #000'
+                  }
+                  " value="#3399FF" class="form-control col" aria-label="kolor"
+                    aria-describedby="basic-addon2" id="ph-angle-between-0-3">
+                    <div class="input-group-append col">
+                      <button class="btn btn-success" onclick="addDrawAngle(event)" type="button" id="button-addon2">+</button>
+                    </div>
+                    <div class="input-group-append col">
+                      <button class="btn btn-danger" onclick="removeNode(event)" type="button" id="button-addon2">-</button>
+                    </div>
+                </div>
+              </p>
+              <a onclick="drawFazory(event)" class="btn btn-primary">Narysuj</a> <br><br>
+              <img src="" alt="" id="ph-plot" class="card-img-bottom" hidden="true">
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 
 </body>
 
