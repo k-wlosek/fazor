@@ -27,7 +27,7 @@ def convert_to_angles(angles):
         # angle
         temp = []
         for j in range(len(i)-1):
-            temp.append(float(i[j]))
+            temp.append(int(i[j]))
         temp.append(i[-1])
         data.append(tuple(temp))
     return data
@@ -38,7 +38,7 @@ if __name__ == "__main__":
     angles = convert_to_angles(angles)
     diagram = Diagram(phasors, title, angles)
     diagram.create()
-    byte = d.save_as_bytes("png")
+    byte = diagram.save_as_bytes("png")
     byte.seek(0)
     global ph_img
     ph_img = 'data:image/png;base64,' + base64.b64encode(byte.read()).decode('UTF-8')

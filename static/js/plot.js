@@ -156,6 +156,27 @@ function addSymbol(event) {
     id = idList.join('-');
     newDatapointElement.id = id;
     // newSymbol.id = id;
+
+    // Fix color picker
+    let picker = newSymbol.querySelector('#ph-color');
+    // Remove old color picker
+    picker.remove();
+    // Create new color picker
+    const pickerHTML = document.createElement('input');
+    pickerHTML.setAttribute('class', 'form-control');
+    pickerHTML.setAttribute('aria-label', 'kolor');
+    pickerHTML.setAttribute('aria-describedby', 'basic-addon2');
+    pickerHTML.setAttribute('id', 'ph-color');
+
+    const opts = {
+        preset: 'dark', 
+        palette: '#C00 #0C0 #00C #000'
+    };
+
+    addNewButton = newSymbol.querySelector('.input-group-append');
+    let _ = new JSColor(pickerHTML, opts);
+    addNewButton.parentNode.insertBefore(pickerHTML, addNewButton);
+
     symbol.parentNode.insertBefore(newSymbol, symbol.nextSibling);
 }
 
@@ -366,7 +387,6 @@ async function drawFazory(event) {
             python_code = code;
         })
         .catch((err) => console.error(err));
-
     try {
         pyodide.runPython(python_code);
     } catch (error) {
